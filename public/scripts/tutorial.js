@@ -1,24 +1,55 @@
-var data = [
-  {author: "Pete Hunt", text: "This is one comment"},
-  {author: "Jordan Walke", text: "This is *another* comment"}
-];
+var mappingRelation = {
+  'author': ['author', 'good_author', 'bad_author']
+}
 
-var CommentList = React.createClass({
-  render: function() {
-    var commentNodes = this.props.data.map(function (comment) {
-      return (
-        <Comment author={comment.author}>
-          {comment.text}
-        </Comment>
-      );
-    });
-    return (
-      <div className="commentList">
-        {commentNodes}
-      </div>
-    );
+var data = [
+    {
+        "author": "Petxezxc HAAAAunt",
+        "text": "Hey thzxcere!"
+    },
+    {
+        "author": "Paul O’Shannessy",
+        "text": "React is *great*!"
+    },
+    {
+        "author": "Jack Ma",
+        "text": "你好吗"
+    },
+    {
+        "bad_author": "Jack S",
+        "text": "Jni"
+    },
+    {
+        "good_author": "妮妮",
+        "text": "OH faster"
+    }
+]
+
+var interfacePrettify = function(data, mappingRelation){
+  var newData = $.extend(true, [], data);
+
+  var aliasObject = function(o){
+    for(var def in mappingRelation){
+      if(!(def in o)){
+        var aliases = mappingRelation[def];
+        for(var i = 0; i < aliases.length; i++) {
+          if(o[aliases[i]]){
+            o[def] = o[aliases[i]];
+            break;
+          }
+        }
+      }
+    }
   }
-});
+
+  newData.forEach(function(o){
+    aliasObject(o);
+  });
+  
+  return newData;
+}
+
+interfacePrettify(data, mappingRelation);
 
 var Comment = React.createClass({
   rawMarkup: function() {
@@ -33,6 +64,23 @@ var Comment = React.createClass({
           {this.props.author}
         </h2>
         <span dangerouslySetInnerHTML={this.rawMarkup()} />
+      </div>
+    );
+  }
+});
+
+var CommentList = React.createClass({
+  render: function() {
+    var commentNodes = this.props.data.map(function (comment) {
+      return (
+        <Comment author={comment.author}>
+          {comment.text}
+        </Comment>
+      );
+    });
+    return (
+      <div className="commentList">
+        {commentNodes}
       </div>
     );
   }

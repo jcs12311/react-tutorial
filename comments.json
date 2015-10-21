@@ -12,11 +12,11 @@
         "text": "你好吗"
     },
     {
-        "author": "Jack S",
+        "bad_author": "Jack S",
         "text": "Jni"
     },
     {
-        "author": "妮妮",
+        "good_author": "妮妮",
         "text": "OH faster"
     }
 ]
