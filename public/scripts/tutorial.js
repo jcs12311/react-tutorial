@@ -20,16 +20,6 @@ var CommentList = React.createClass({
   }
 });
 
-var CommentForm = React.createClass({
-  render: function() {
-    return (
-      <div className="commentForm">
-        Hello, world! I am a CommentForm.
-      </div>
-    );
-  }
-});
-
 var Comment = React.createClass({
   rawMarkup: function() {
     var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
@@ -56,7 +46,7 @@ var CommentForm = React.createClass({
     if (!text || !author) {
       return;
     }
-    // TODO: send request to the server
+    this.props.onCommentSubmit({author: author, text: text});
     this.refs.author.value = '';
     this.refs.text.value = '';
     return;
@@ -64,11 +54,11 @@ var CommentForm = React.createClass({
   render: function() {
     return (
       <form className="commentForm" onSubmit={this.handleSubmit}>
-        <input type="text" placeholder="Your name" ref="author" />
+        <input type="text" placeholder="Your name" ref="author" /> 
         <input type="text" placeholder="Say something..." ref="text" />
         <input type="submit" value="Post" />
       </form>
-    );
+    );// todo: q:why react don't use name="author" and use ref
   }
 });
 
@@ -78,6 +68,23 @@ var CommentBox = React.createClass({
       url: this.props.url,
       dataType: 'json',
       cache: false,
+      success: function(data) {
+        this.setState({data: data});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }.bind(this)
+    });
+  },
+  handleCommentSubmit: function(comment) {
+    var comments = this.state.data;
+    var newComments = comments.concat([comment]);
+    this.setState({data: newComments});
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      type: 'POST',
+      data: comment,
       success: function(data) {
         this.setState({data: data});
       }.bind(this),
@@ -98,7 +105,7 @@ var CommentBox = React.createClass({
       <div className="commentBox">
         <h1>Comments</h1>
         <CommentList data={this.state.data} />
-        <CommentForm />
+        <CommentForm onCommentSubmit={this.handleCommentSubmit} />
       </div>
     );
   }
